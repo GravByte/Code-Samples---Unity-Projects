@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Audio;
 
 public class AudioManager : MonoBehaviour
@@ -13,20 +15,22 @@ public class AudioManager : MonoBehaviour
     [SerializeField] AudioMixer musicMixer;
     [SerializeField] AudioMixer SFXMixer;
 
-    [SerializeField] float musicSliderValue, SFXSliderValue;
+    [SerializeField] Slider musicSlider;
+    [SerializeField] Slider SFXSlider;
 
-    private void Awake()
+    private void Start()
     {
 		//-------- Gets the value of the music and SFX sliders and applies it to the mixer
-        musicSliderValue = PlayerPrefs.GetFloat("MusicSlider", musicSliderValue);
-        Debug.Log("musicValue: " + musicSliderValue);
+        
+        musicSlider.value = PlayerPrefs.GetFloat("MusicSlider", musicSlider.value);
+        SFXSlider.value = PlayerPrefs.GetFloat("SFXSlider", SFXSlider.value);
 
-        SFXSliderValue = PlayerPrefs.GetFloat("SFXSlider", SFXSliderValue);
-        Debug.Log("SFXValue: " + musicSliderValue);
-
-        MusicVolume(musicSliderValue);
-        SFXVolume(SFXSliderValue);
-
+        Debug.Log("musicValue: " + musicSlider.value);
+        Debug.Log("SFXValue: " + musicSlider.value);
+        
+        MusicVolume(musicSlider.value);
+        SFXVolume(SFXSlider.value);
+        
     }
 
     //-------- Adjusts music mixer volume
@@ -34,12 +38,24 @@ public class AudioManager : MonoBehaviour
     {
 		//-------- Sets value to mixer in player preferences with a logarithmic conversion
         musicMixer.SetFloat("MusicVol", Mathf.Log10(volume) * 20);
+        PlayerPrefs.SetFloat("MusicVol", Mathf.Log10(volume) * 20);
+        
+        PlayerPrefs.SetFloat("MusicSlider", musicSlider.value);
+        
+        PlayerPrefs.Save();
+        //Debug.Log("PlayerPrefs Saved");
     }
 
     //------- adjusts sound effect mixer volume
     public void SFXVolume(float volume)
     {
         SFXMixer.SetFloat("SFXVol", Mathf.Log10(volume) * 20);
+        PlayerPrefs.SetFloat("SFXVol", Mathf.Log10(volume) * 20);
+        
+        PlayerPrefs.SetFloat("SFXSlider", SFXSlider.value);
+        
+        PlayerPrefs.Save();
+        //Debug.Log("PlayerPrefs Saved");
     }
-    
+
 }
